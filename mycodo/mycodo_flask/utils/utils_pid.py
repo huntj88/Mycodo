@@ -6,9 +6,9 @@ from flask import flash
 from flask_babel import gettext
 
 from mycodo.config_translations import TRANSLATIONS
+from mycodo.databases.models import CustomController
 from mycodo.databases.models import DeviceMeasurements
 from mycodo.databases.models import Input
-from mycodo.databases.models import Math
 from mycodo.databases.models import Output
 from mycodo.databases.models import PID
 from mycodo.mycodo_client import DaemonControl
@@ -335,21 +335,18 @@ def has_required_pid_values(pid_id, messages):
         PID.unique_id == pid_id).first()
 
     if not pid.measurement:
-        messages["error"].append(gettext(
-            "A valid Measurement is required"))
+        messages["error"].append("A valid Measurement is required")
     else:
         device_unique_id = pid.measurement.split(',')[0]
         input_dev = Input.query.filter(
             Input.unique_id == device_unique_id).first()
-        math = Math.query.filter(
-            Math.unique_id == device_unique_id).first()
-        if not input_dev and not math:
-            messages["error"].append(gettext(
-                "A valid Measurement is required"))
+        function = CustomController.query.filter(
+            CustomController.unique_id == device_unique_id).first()
+        if not input_dev and not function:
+            messages["error"].append("A valid controller is required")
 
     if not pid.raise_output_id and not pid.lower_output_id:
-        messages["error"].append(gettext(
-            "A Raise Output and/or a Lower Output is ""required"))
+        messages["error"].append("A Raise Output and/or a Lower Output is required")
 
     return messages
 
@@ -371,12 +368,10 @@ def pid_activate(pid_id):
     device_unique_id = pid.measurement.split(',')[0]
     input_dev = Input.query.filter(
         Input.unique_id == device_unique_id).first()
-    math = Math.query.filter(
-        Math.unique_id == device_unique_id).first()
 
-    if (input_dev and not input_dev.is_activated) or (math and not math.is_activated):
+    if input_dev and not input_dev.is_activated:
         messages["error"].append(gettext(
-            "Cannot activate PID controller if the associated sensor "
+            "Cannot activate PID controller if the associated Input "
             "controller is inactive"))
 
     if ((pid.direction == 'both' and not (pid.lower_output_id and pid.raise_output_id)) or

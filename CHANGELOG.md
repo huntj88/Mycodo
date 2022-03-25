@@ -2,8 +2,11 @@
 
 Following the upgrade, you will need to reboot to complete the upgrade.
 
+LCD and Math Controllers have been completely removed from Mycodo and replaced with Functions. If you were previously using an LCD or Math controller, you will need to add the corresponding Function and change any other parts of the system that referenced those devices.
+
 ### Bugfixes
 
+ - Fix installation on 64-bit OSs
  - Fix missing netcat and wget install dependencies ([#1124](https://github.com/kizniche/mycodo/issues/1124))
  - Fix inability to safe user settings
  - Fix install issue due to outdated apt repository
@@ -18,10 +21,14 @@ Following the upgrade, you will need to reboot to complete the upgrade.
  - Fix issues with the Output Widget
  - Fix BME680 Input dependency
  - Fix Gauge Widget stop selection ([#1130](https://github.com/kizniche/mycodo/issues/1130))
+ - Fix DS18B20 (ow-shell) Input ([#910](https://github.com/kizniche/mycodo/issues/910)) (measurements are erroneous, though)
+ - Fix PIDs using Functions as measurement ([#1165](https://github.com/kizniche/mycodo/issues/1165))
 
 ### Features
 
- - Add ability to import custom Action modules (Configure -> Custom Actions))
+ - Add ability to execute Actions for Inputs
+ - Add ability to import custom Action modules (Configure -> Custom Actions)
+ - Add ability to cast MQTT Action payload as integer or float
  - Add camera library: libcamera ([#1117](https://github.com/kizniche/mycodo/issues/1117))
  - Add Input: TTN Integration: Data Storage (TTN v3, Payload jmespath Expression)
  - Add Output: Kasa HS300 Smart WiFi Power Strip
@@ -34,10 +41,12 @@ Following the upgrade, you will need to reboot to complete the upgrade.
 
 ### Miscellaneous
 
+ - Remove LCD and Math Controllers (both replaced with Functions)
  - Update influxdb from 1.8.0 to 1.8.10
  - Update python library versions in requirements.txt
  - Add button to install all dependencies on Diagnostics page
  - Add Error Codes to log lines and the manual
+ - Switch to using suntime for Sunrise/Sunset calculation
 
 
 ## 8.12.9 (2021-12-02)
@@ -354,7 +363,7 @@ class CustomModule(AbstractController, threading.Thread):
     """
     def __init__(self, ready, unique_id, testing=False):
         threading.Thread.__init__(self)
-        super(CustomModule, self).__init__(ready, unique_id=unique_id, name=__name__)
+        super().__init__(ready, unique_id=unique_id, name=__name__)
 
         self.unique_id = unique_id
         self.log_level_debug = None
@@ -376,7 +385,7 @@ class CustomModule(AbstractFunction):
     Class to operate custom controller
     """
     def __init__(self, function, testing=False):
-        super(CustomModule, self).__init__(function, testing=testing, name=__name__)
+        super().__init__(function, testing=testing, name=__name__)
 
         # Note: The following 2 lines are no longer needed to be defined here. Delete them.
         # self.unique_id = function.unique_id  
@@ -453,7 +462,7 @@ As always, a backup of the current system files and settings is performed during
  - Add Function: SSD1309 Display
  - Add Function: Bang-Bang PWM
  - Add Function Action: MQTT Publish
- - Add Function Action: webhook to emit HTTP requests ([discussion](https://kylegabriel.com/forum/general-discussion/webhook-action/))
+ - Add Function Action: webhook to emit HTTP requests
  - Partial conversion of Display/LCD controllers to Display Functions
  - Add external temperature compensation for Anyleaf pH Input
  - Add ability to set camera stream frames per second
