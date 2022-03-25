@@ -334,18 +334,19 @@ def has_required_pid_values(pid_id, messages):
     pid = PID.query.filter(
         PID.unique_id == pid_id).first()
 
-    if not pid.measurement:
-        messages["error"].append(gettext(
-            "A valid Measurement is required"))
-    else:
+    # if not pid.measurement:
+    #     messages["error"].append(gettext(
+    #         "A valid Measurement is required"))
+    # else:
+    if True:
         device_unique_id = pid.measurement.split(',')[0]
         input_dev = Input.query.filter(
             Input.unique_id == device_unique_id).first()
         math = Math.query.filter(
             Math.unique_id == device_unique_id).first()
-        if not input_dev and not math:
-            messages["error"].append(gettext(
-                "A valid Measurement is required"))
+        # if not input_dev and not math:
+        #     messages["error"].append(gettext(
+        #         "A valid Measurement is required"))
 
     if not pid.raise_output_id and not pid.lower_output_id:
         messages["error"].append(gettext(
